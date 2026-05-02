@@ -14,9 +14,7 @@ public class MainApp {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        //coba push dulu bray
-        //dari mufid boong
-        //ini sukma
+        
     }
     
 }
