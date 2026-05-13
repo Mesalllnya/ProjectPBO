@@ -4,10 +4,16 @@
  */
 package mainapp.bangunDatar;
 
+import geometri.BangunDatar;
 /**
  *
  * @author Asus
  */
-public class PersegiPanjang {
+abstract class PersegiPanjang implements BangunDatar {
+    private double panjang, lebar;
     
+//    constructor
+    public void PersegiPanjang(double panjang, double lebar){
+        
+    }
 }

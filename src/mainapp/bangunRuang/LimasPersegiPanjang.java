@@ -8,6 +8,10 @@ package mainapp.bangunRuang;
  *
  * @author Asus
  */
-public class LimasPersegiPanjang {
+public class LimasPersegiPanjang extends PersegiPanjang implements BangunRuang{
     
+    private double panjang, lebar, tinggi;
+    
+//    constructor
+//    public void
 }

@@ -8,8 +8,7 @@ package geometri;
  *
  * @author Asus
  */
-interface BangunDatar {
-    
+public interface BangunDatar {
     double hitungLuas();
     double hitungKeliling();
 }
