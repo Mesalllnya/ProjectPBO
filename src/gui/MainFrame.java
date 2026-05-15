@@ -75,36 +75,59 @@ public class MainFrame extends JFrame {
     }
 
     private void jalankanKalkulasi() {
-        // Cek jika field kosong untuk menghindari spam error di console
-        if (txtPanjang.getText().isEmpty() || txtLebar.getText().isEmpty() || txtTinggi.getText().isEmpty()) {
-            txtOutput.setText("Menunggu input lengkap...");
+    // 1. Reset Output setiap kali ada perubahan input
+    txtOutput.setText("--- STATUS KALKULASI ---\n\n");
+
+    try {
+        // Ambil string dari textfield
+        String strP = txtPanjang.getText();
+        String strL = txtLebar.getText();
+        String strT = txtTinggi.getText();
+
+        // 2. Validasi Dasar: Apakah Panjang & Lebar sudah diisi?
+        if (strP.isEmpty() || strL.isEmpty()) {
+            txtOutput.append("[Sistem] Menunggu input Panjang & Lebar...\n");
             return;
         }
 
-        try {
-            double p = Double.parseDouble(txtPanjang.getText());
-            double l = Double.parseDouble(txtLebar.getText());
-            double t = Double.parseDouble(txtTinggi.getText());
-            
-            // Reset output setiap kali kalkulasi baru dimulai
-            txtOutput.setText("--- PROSES KALKULASI BERANTAI ---\n\n");
+        double p = Double.parseDouble(strP);
+        double l = Double.parseDouble(strL);
 
-            // Cari metode jalankanKalkulasi() di MainFrame.java dan ubah bagian inisialisasi thread menjadi:
-
-            DataShared sharedData = new DataShared();
-
-            ThreadPersegi thread1 = new ThreadPersegi(p, l, sharedData, txtOutput);
-            ThreadPrisma thread2 = new ThreadPrisma(t, thread1, sharedData, txtOutput);
-            // Tambahkan argumen p dan l ke dalam ThreadLimas
-            ThreadLimas thread3 = new ThreadLimas(p, l, t, thread1, sharedData, txtOutput);
-
-            thread1.start();
-            thread2.start();
-            thread3.start();
-
-        } catch (NumberFormatException ex) {
-            // Tidak menampilkan dialog error agar tidak mengganggu proses mengetik
-            txtOutput.setText("Input harus berupa angka.");
+        // Validasi Logika 2D: Tidak boleh 0 atau negatif
+        if (p <= 0 || l <= 0) {
+            txtOutput.append("[Error] Panjang & Lebar harus lebih dari 0!\n");
+            return;
         }
+
+        // Inisialisasi DataShared untuk menampung Luas Alas
+        DataShared sharedData = new DataShared();
+        
+        // 3. JALANKAN THREAD PERSEGI (Selalu jalan jika p & l valid)
+        ThreadPersegi thread1 = new ThreadPersegi(p, l, sharedData, txtOutput);
+        thread1.start();
+
+        // 4. VALIDASI TINGGI UNTUK PRISMA & LIMAS
+        if (strT.isEmpty()) {
+            txtOutput.append("\n[Notifikasi Prisma & Limas]:\n");
+            txtOutput.append("-> Gagal diproses: Tinggi belum diinput!\n");
+        } else {
+            double t = Double.parseDouble(strT);
+
+            if (t <= 0) {
+                txtOutput.append("\n[Notifikasi Prisma & Limas]:\n");
+                txtOutput.append("-> Gagal diproses: Tinggi harus lebih dari 0!\n");
+            } else {
+                // Jika tinggi valid (> 0), jalankan Thread Prisma & Limas
+                ThreadPrisma thread2 = new ThreadPrisma(t, thread1, sharedData, txtOutput);
+                ThreadLimas thread3 = new ThreadLimas(p, l, t, thread1, sharedData, txtOutput);
+
+                thread2.start();
+                thread3.start();
+            }
+        }
+
+    } catch (NumberFormatException ex) {
+        txtOutput.setText("[Error] Input harus berupa angka yang valid!");
     }
+}
 }
