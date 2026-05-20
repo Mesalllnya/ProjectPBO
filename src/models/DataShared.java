@@ -1,22 +1,27 @@
 package models;
 
 public class DataShared {
-    private double luasAlas;
-    private double kelilingAlas;
+    private double[] luasAlas;
+    private double[] kelilingAlas;
 
-    public void setLuasAlas(double luasAlas) {
-        this.luasAlas = luasAlas;
+    public DataShared(int size) {
+        luasAlas = new double[size];
+        kelilingAlas = new double[size];
     }
 
-    public double getLuasAlas() {
-        return luasAlas;
+    public void setLuasAlas(int index, double luas) {
+        this.luasAlas[index] = luas;
     }
 
-    public void setKelilingAlas(double kelilingAlas) {
-        this.kelilingAlas = kelilingAlas;
+    public double getLuasAlas(int index) {
+        return luasAlas[index];
     }
 
-    public double getKelilingAlas() {
-        return kelilingAlas;
+    public void setKelilingAlas(int index, double keliling) {
+        this.kelilingAlas[index] = keliling;
+    }
+
+    public double getKelilingAlas(int index) {
+        return kelilingAlas[index];
     }
 }
