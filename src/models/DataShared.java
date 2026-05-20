@@ -1,27 +1,19 @@
 package models;
 
+import java.util.concurrent.LinkedBlockingQueue;
+
 public class DataShared {
-    private double[] luasAlas;
-    private double[] kelilingAlas;
+    // Antrean khusus untuk mengirim data dari Thread 1 ke Thread 2 & 3
+    public LinkedBlockingQueue<Double> antreanLuasUntukPrisma;
+    public LinkedBlockingQueue<Double> antreanLuasUntukLimas;
+    public LinkedBlockingQueue<Double> antreanKelilingUntukPrisma;
+    public LinkedBlockingQueue<Double> antreanKelilingUntukLimas;
 
     public DataShared(int size) {
-        luasAlas = new double[size];
-        kelilingAlas = new double[size];
-    }
-
-    public void setLuasAlas(int index, double luas) {
-        this.luasAlas[index] = luas;
-    }
-
-    public double getLuasAlas(int index) {
-        return luasAlas[index];
-    }
-
-    public void setKelilingAlas(int index, double keliling) {
-        this.kelilingAlas[index] = keliling;
-    }
-
-    public double getKelilingAlas(int index) {
-        return kelilingAlas[index];
+        // Kapasitas antrean disesuaikan dengan jumlah data
+        antreanLuasUntukPrisma = new LinkedBlockingQueue<>(size);
+        antreanLuasUntukLimas = new LinkedBlockingQueue<>(size);
+        antreanKelilingUntukPrisma = new LinkedBlockingQueue<>(size);
+        antreanKelilingUntukLimas = new LinkedBlockingQueue<>(size);
     }
 }

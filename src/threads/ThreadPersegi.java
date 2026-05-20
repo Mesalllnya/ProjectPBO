@@ -31,28 +31,27 @@ public class ThreadPersegi extends Thread {
             double luas = persegi.hitungLuas();
             double keliling = persegi.hitungKeliling();
             
-            shared.setLuasAlas(i, luas);
-            shared.setKelilingAlas(i, keliling);
+            try {
+                // LANGSUNG OPER DATA SECEPATNYA KE THREAD LAIN!
+                shared.antreanLuasUntukPrisma.put(luas);
+                shared.antreanLuasUntukLimas.put(luas);
+                shared.antreanKelilingUntukPrisma.put(keliling);
+                shared.antreanKelilingUntukLimas.put(keliling);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             
-            // Kolom Volume diisi "0.00" karena Persegi Panjang tidak memiliki volume
             Object[] row = {
                 (i + 1), "Persegi Panjang", 
                 String.format("P=%.1f, L=%.1f", p[i], l[i]),
-                String.format("%.2f", luas), 
-                "0.00", 
-                String.format("%.2f", keliling), 
-                "Thread 1"
+                String.format("%.2f", luas), "0.00", String.format("%.2f", keliling), "Thread 1"
             };
             barisData.add(row);
         }
         
         SwingUtilities.invokeLater(() -> {
-            for (Object[] row : barisData) {
-                tableModel.addRow(row);
-            }
-            if (progressBar != null) {
-                progressBar.setValue(33);
-            }
+            for (Object[] row : barisData) tableModel.addRow(row);
+            if (progressBar != null) progressBar.setValue(33);
         });
     }
 }
