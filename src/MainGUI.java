@@ -131,9 +131,20 @@ public class MainGUI extends JFrame {
 
     public void mulaiProses() {
         try {
+            // 1. Ambil input jumlah data
             int jumlahData = Integer.parseInt(txtJumlahData.getText());
             
-            // Validasi: Persegi Panjang WAJIB dicentang karena dia adalah "Produsen" P dan L
+            // VALIDASI: Jumlah data tidak boleh 0 atau kurang dari 0
+            if (jumlahData <= 0) {
+                throw new Exception("Jumlah data harus lebih besar dari 0!");
+            }
+
+            // VALIDASI: Minimal harus ada satu checkbox yang dicentang
+            if (!chkPersegi.isSelected() && !chkPrisma.isSelected() && !chkLimas.isSelected()) {
+                throw new Exception("Anda harus mencentang minimal satu pilihan bangun geometri!");
+            }
+            
+            // Validasi bawaan: Persegi Panjang WAJIB dicentang jika 3D dicentang
             if (!chkPersegi.isSelected()) {
                 if (chkPrisma.isSelected() || chkLimas.isSelected()) {
                     JOptionPane.showMessageDialog(this, "Persegi Panjang WAJIB dicentang karena bangun 3D membutuhkan datanya!", "Peringatan", JOptionPane.WARNING_MESSAGE);
@@ -141,11 +152,29 @@ public class MainGUI extends JFrame {
                 return;
             }
 
+            // VALIDASI: Input manual dimensi tidak boleh 0 atau negatif
+            String textP = txtPanjang.getText().trim();
+            String textL = txtLebar.getText().trim();
+            String textT = txtTinggi.getText().trim();
+            
+            if (!textP.isEmpty()) {
+                double p = Double.parseDouble(textP);
+                if (p <= 0) throw new Exception("Nilai Panjang harus lebih besar dari 0!");
+            }
+            if (!textL.isEmpty()) {
+                double l = Double.parseDouble(textL);
+                if (l <= 0) throw new Exception("Nilai Lebar harus lebih besar dari 0!");
+            }
+            if (!textT.isEmpty()) {
+                double t = Double.parseDouble(textT);
+                if (t <= 0) throw new Exception("Nilai Tinggi harus lebih besar dari 0!");
+            }
+
+            // Jika lolos semua validasi, mulai reset dan jalankan program
             resetGUI();
             startTime = System.currentTimeMillis();
-
             
-            // Hanya menyiapkan keranjang kosong. Array double di Java otomatis berisi 0.0
+            // Menyiapkan keranjang kosong
             sharedBaseData = new double[jumlahData][2];
 
             // 1. Thread Persegi
@@ -169,7 +198,11 @@ public class MainGUI extends JFrame {
             if (chkLimas.isSelected()) threadLimas.start();
 
         } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "Masukkan angka yang valid pada Jumlah Data!");
+            // Error ini terpanggil jika text field diisi huruf atau karakter non-angka
+            JOptionPane.showMessageDialog(this, "Pastikan Jumlah Data, Panjang, Lebar, dan Tinggi diisi dengan format angka yang valid!", "Error Format Angka", JOptionPane.ERROR_MESSAGE);
+        } catch (Exception ex) {
+            // Error ini terpanggil dari 'throw new Exception' yang kita buat di atas
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Peringatan Validasi", JOptionPane.WARNING_MESSAGE);
         }
     }
 
@@ -191,9 +224,8 @@ public class MainGUI extends JFrame {
         for (int i = 1; i <= batasData; i++) {
             double pRun = 0, lRun = 0, tRun = 0;
 
-            // =======================================================
-            // LOGIKA GENERATE DATA SAAT OPERASI BERJALAN (ON THE FLY)
-            // =======================================================
+            
+            // GENERATE DATA SAAT OPERASI BERJALAN (Otomatis)
             if (modeManual) {
                 pRun = pInput; lRun = lInput; tRun = tInput;
             } else {
@@ -224,47 +256,51 @@ public class MainGUI extends JFrame {
                     tRun = (Math.random() * 40) + 5; 
                 }
             }
-            // =======================================================
+            
 
             double luas = 0, volume = 0, keliling = 0;
             String paramStr = "";
 
-            if (namaBangun.equals("Persegi Panjang")) {
-                PersegiPanjang persegi = new PersegiPanjang(pRun, lRun);
-                if (modeManual) { 
-                    luas = persegi.menghitungLuas(pRun, lRun);
-                    keliling = persegi.menghitungKeliling(pRun, lRun);
-                } else { 
-                    luas = persegi.menghitungLuas();
-                    keliling = persegi.menghitungKeliling();
-                }
-                paramStr = String.format("P=%.1f, L=%.1f", pRun, lRun);
-
-            } else if (namaBangun.equals("Prisma Segi Empat")) {
-                PrismaPersegiPanjang prisma = new PrismaPersegiPanjang(pRun, lRun, tRun);
-                if (modeManual) {
-                    luas = prisma.menghitungLuasPermukaan(pRun, lRun, tRun);
-                    keliling = prisma.menghitungKeliling(pRun, lRun); 
-                    volume = prisma.menghitungVolume(pRun, lRun, tRun);
-                } else {
-                    luas = prisma.menghitungLuasPermukaan();
-                    keliling = prisma.menghitungKeliling();
-                    volume = prisma.menghitungVolume();
-                }
-                paramStr = String.format("P=%.1f, L=%.1f, T=%.1f", pRun, lRun, tRun);
-
-            } else if (namaBangun.equals("Limas Segi Empat")) {
-                LimasPersegiPanjang limas = new LimasPersegiPanjang(pRun, lRun, tRun);
-                if (modeManual) {
-                    luas = limas.menghitungLuasPermukaan(pRun, lRun, tRun);
-                    keliling = limas.menghitungKeliling(pRun, lRun);
-                    volume = limas.menghitungVolume(pRun, lRun, tRun);
-                } else {
-                    luas = limas.menghitungLuasPermukaan();
-                    keliling = limas.menghitungKeliling();
-                    volume = limas.menghitungVolume();
-                }
-                paramStr = String.format("P=%.1f, L=%.1f, T=%.1f", pRun, lRun, tRun);
+            switch (namaBangun) {
+                case "Persegi Panjang":
+                    //                instansisasi
+                    PersegiPanjang persegi = new PersegiPanjang(pRun, lRun);
+                    if (modeManual) {
+                        luas = persegi.menghitungLuas(pRun, lRun);
+                        keliling = persegi.menghitungKeliling(pRun, lRun);
+                    } else {
+                        luas = persegi.menghitungLuas();
+                        keliling = persegi.menghitungKeliling();
+                    }   paramStr = String.format("P=%.1f, L=%.1f", pRun, lRun);
+                    break;
+                case "Prisma Segi Empat":
+                    //                instansiasi
+                    PersegiPanjang prisma = new PrismaPersegiPanjang(pRun, lRun, tRun);
+                    if (modeManual) {
+                        luas = prisma.menghitungLuasPermukaan(pRun, lRun, tRun);
+                        keliling = prisma.menghitungKeliling(pRun, lRun);
+                        volume = prisma.menghitungVolume(pRun, lRun, tRun);
+                    } else {
+                        luas = prisma.menghitungLuasPermukaan();
+                        keliling = prisma.menghitungKeliling();
+                        volume = prisma.menghitungVolume();
+                    }   paramStr = String.format("P=%.1f, L=%.1f, T=%.1f", pRun, lRun, tRun);
+                    break;
+                case "Limas Segi Empat":
+                    //                instansiasi
+                    PersegiPanjang limas = new LimasPersegiPanjang(pRun, lRun, tRun);
+                    if (modeManual) {
+                        luas = limas.menghitungLuasPermukaan(pRun, lRun, tRun);
+                        keliling = limas.menghitungKeliling(pRun, lRun);
+                        volume = limas.menghitungVolume(pRun, lRun, tRun);
+                    } else {
+                        luas = limas.menghitungLuasPermukaan();
+                        keliling = limas.menghitungKeliling();
+                        volume = limas.menghitungVolume();
+                    }   paramStr = String.format("P=%.1f, L=%.1f, T=%.1f", pRun, lRun, tRun);
+                    break;
+                default:
+                    break;
             }
 
             Vector<Object> baris = new Vector<>();

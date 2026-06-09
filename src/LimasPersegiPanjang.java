@@ -18,16 +18,16 @@ public class LimasPersegiPanjang extends PersegiPanjang {
     // --- IMPLEMENTASI TANPA PARAMETER ---
     @Override
     public double menghitungLuasPermukaan() {
-        double tSegiLebar = Math.sqrt(Math.pow(panjang / 2.0, 2) + Math.pow(tinggi, 2));
-        double tSegiPanjang = Math.sqrt(Math.pow(lebar / 2.0, 2) + Math.pow(tinggi, 2));
-        luasPermukaanLimas = super.menghitungLuas() + (panjang * tSegiPanjang) + (lebar * tSegiLebar);
-        return luasPermukaanLimas;
+        double tSegiLebar = Math.sqrt(Math.pow(super.panjang / 2.0, 2) + Math.pow(this.tinggi, 2));
+        double tSegiPanjang = Math.sqrt(Math.pow(super.lebar / 2.0, 2) + Math.pow(this.tinggi, 2));
+        this.luasPermukaanLimas = super.menghitungLuas() + (super.panjang * tSegiPanjang) + (super.lebar * tSegiLebar);
+        return this.luasPermukaanLimas;
     }
 
     @Override
     public double menghitungVolume() {
-        volumeLimas = (super.menghitungLuas() * tinggi) / 3.0;
-        return volumeLimas;
+        this.volumeLimas = (super.menghitungLuas() * this.tinggi) / 3.0;
+        return this.volumeLimas;
     }
 
     // --- IMPLEMENTASI DENGAN PARAMETER ---
@@ -35,13 +35,13 @@ public class LimasPersegiPanjang extends PersegiPanjang {
     public double menghitungLuasPermukaan(double p, double l, double t) {
         double tSegiLebar = Math.sqrt(Math.pow(p / 2.0, 2) + Math.pow(t, 2));
         double tSegiPanjang = Math.sqrt(Math.pow(l / 2.0, 2) + Math.pow(t, 2));
-        luasPermukaanLimas = super.menghitungLuas(p, l) + (p * tSegiPanjang) + (l * tSegiLebar);
-        return luasPermukaanLimas;
+        this.luasPermukaanLimas = super.menghitungLuas(p, l) + (p * tSegiPanjang) + (l * tSegiLebar);
+        return this.luasPermukaanLimas;
     }
 
     @Override
     public double menghitungVolume(double p, double l, double t) {
-        volumeLimas = (super.menghitungLuas(p, l) * t) / 3.0;
-        return volumeLimas;
+        this.volumeLimas = (super.menghitungLuas(p, l) * t) / 3.0;
+        return this.volumeLimas;
     }
 }

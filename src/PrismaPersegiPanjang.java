@@ -18,26 +18,26 @@ public class PrismaPersegiPanjang extends PersegiPanjang {
     // --- IMPLEMENTASI TANPA PARAMETER ---
     @Override
     public double menghitungLuasPermukaan() {
-        luasPermukaanPrisma = 2 * ((panjang * lebar) + (panjang * tinggi) + (lebar * tinggi));
-        return luasPermukaanPrisma;
+        this.luasPermukaanPrisma = 2 * ((super.panjang * super.lebar) + (super.panjang * tinggi) + (super.lebar * tinggi));
+        return this.luasPermukaanPrisma;
     }
 
     @Override
     public double menghitungVolume() {
-        volumePrisma = super.menghitungLuas() * tinggi;
-        return volumePrisma;
+        this.volumePrisma = super.menghitungLuas() * this.tinggi;
+        return this.volumePrisma;
     }
 
     // --- IMPLEMENTASI DENGAN PARAMETER ---
     @Override
     public double menghitungLuasPermukaan(double p, double l, double t) {
-        luasPermukaanPrisma = 2 * ((p * l) + (p * t) + (l * t));
-        return luasPermukaanPrisma;
+        this.luasPermukaanPrisma = 2 * ((super.luas) + (p * t) + (l * t));
+        return this.luasPermukaanPrisma;
     }
 
     @Override
     public double menghitungVolume(double p, double l, double t) {
-        volumePrisma = super.menghitungLuas(p, l) * t;
-        return volumePrisma;
+        this.volumePrisma = super.menghitungLuas(p, l) * t;
+        return this.volumePrisma;
     }
 }

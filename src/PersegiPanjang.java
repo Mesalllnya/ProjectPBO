@@ -10,7 +10,7 @@ public class PersegiPanjang implements Geometri {
         this.lebar = (Math.random() * 40) + 5;
     }
 
-    // CONSTRUCTOR 2: DENGAN PARAMETER (Menerima input statis/dinamis)
+    // CONSTRUCTOR 2: DENGAN PARAMETER (Menerima input dinamis)
     public PersegiPanjang(double panjang, double lebar) {
         this.panjang = panjang;
         this.lebar = lebar;
@@ -19,14 +19,14 @@ public class PersegiPanjang implements Geometri {
     // --- IMPLEMENTASI TANPA PARAMETER ---
     @Override
     public double menghitungLuas() {
-        luas = panjang * lebar;
-        return luas;
+        this.luas = panjang * lebar;
+        return this.luas;
     }
 
     @Override
     public double menghitungKeliling() {
-        keliling = 2 * (panjang + lebar);
-        return keliling;
+        this.keliling = 2 * (panjang + lebar);
+        return this.keliling;
     }
 
     @Override
@@ -42,14 +42,14 @@ public class PersegiPanjang implements Geometri {
     // --- IMPLEMENTASI DENGAN PARAMETER ---
     @Override
     public double menghitungLuas(double p, double l) {
-        luas = p * l;
-        return luas;
+        this.luas = p * l;
+        return this.luas;
     }
 
     @Override
     public double menghitungKeliling(double p, double l) {
-        keliling = 2 * (p + l);
-        return keliling;
+        this.keliling = 2 * (p + l);
+        return this.keliling;
     }
 
     @Override
