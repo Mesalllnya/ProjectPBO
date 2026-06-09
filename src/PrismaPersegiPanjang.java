@@ -40,4 +40,9 @@ public class PrismaPersegiPanjang extends PersegiPanjang {
         this.volumePrisma = super.menghitungLuas(p, l) * t;
         return this.volumePrisma;
     }
+    
+    @Override
+    public double menghitungKeliling() {
+        return 0;
+    }
 }

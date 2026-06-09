@@ -134,17 +134,17 @@ public class MainGUI extends JFrame {
             // 1. Ambil input jumlah data
             int jumlahData = Integer.parseInt(txtJumlahData.getText());
             
-            // VALIDASI: Jumlah data tidak boleh 0 atau kurang dari 0
+            // Mengecek Jumlah data tidak boleh 0 atau kurang dari 0
             if (jumlahData <= 0) {
                 throw new Exception("Jumlah data harus lebih besar dari 0!");
             }
 
-            // VALIDASI: Minimal harus ada satu checkbox yang dicentang
+            // Mengecek Minimal harus ada satu checkbox yang dicentang
             if (!chkPersegi.isSelected() && !chkPrisma.isSelected() && !chkLimas.isSelected()) {
                 throw new Exception("Anda harus mencentang minimal satu pilihan bangun geometri!");
             }
             
-            // Validasi bawaan: Persegi Panjang WAJIB dicentang jika 3D dicentang
+            // Mengecek Persegi Panjang WAJIB dicentang jika 3D dicentang
             if (!chkPersegi.isSelected()) {
                 if (chkPrisma.isSelected() || chkLimas.isSelected()) {
                     JOptionPane.showMessageDialog(this, "Persegi Panjang WAJIB dicentang karena bangun 3D membutuhkan datanya!", "Peringatan", JOptionPane.WARNING_MESSAGE);
@@ -152,11 +152,11 @@ public class MainGUI extends JFrame {
                 return;
             }
 
-            // VALIDASI: Input manual dimensi tidak boleh 0 atau negatif
+            // Mengecek Input manual dimensi tidak boleh 0 atau negatif
             String textP = txtPanjang.getText().trim();
             String textL = txtLebar.getText().trim();
             String textT = txtTinggi.getText().trim();
-            
+
             if (!textP.isEmpty()) {
                 double p = Double.parseDouble(textP);
                 if (p <= 0) throw new Exception("Nilai Panjang harus lebih besar dari 0!");
@@ -165,7 +165,8 @@ public class MainGUI extends JFrame {
                 double l = Double.parseDouble(textL);
                 if (l <= 0) throw new Exception("Nilai Lebar harus lebih besar dari 0!");
             }
-            if (!textT.isEmpty()) {
+            // Validasi tinggi HANYA berjalan jika kolom tidak kosong DAN user memilih Prisma atau Limas (Bangun 3D)
+            if (!textT.isEmpty() && (chkPrisma.isSelected() || chkLimas.isSelected())) {
                 double t = Double.parseDouble(textT);
                 if (t <= 0) throw new Exception("Nilai Tinggi harus lebih besar dari 0!");
             }
@@ -212,92 +213,64 @@ public class MainGUI extends JFrame {
         String textP = txtPanjang.getText().trim();
         String textL = txtLebar.getText().trim();
         String textT = txtTinggi.getText().trim();
-        boolean modeManual = !textP.isEmpty() && !textL.isEmpty();
         
-        double pInput = 0, lInput = 0, tInput = 0;
-        if (modeManual) {
-            pInput = Double.parseDouble(textP);
-            lInput = Double.parseDouble(textL);
-            if (!textT.isEmpty()) tInput = Double.parseDouble(textT);
-        }
+        // Cek input masing-masing secara MANDIRI (tidak lagi digabung menjadi satu mode)
+        boolean isPManual = !textP.isEmpty();
+        boolean isLManual = !textL.isEmpty();
+        boolean isTManual = !textT.isEmpty();
+        
+        // Parsing nilai jika diisi, biarkan 0 jika kosong
+        double pInput = isPManual ? Double.parseDouble(textP) : 0;
+        double lInput = isLManual ? Double.parseDouble(textL) : 0;
+        double tInput = isTManual ? Double.parseDouble(textT) : 0;
         
         for (int i = 1; i <= batasData; i++) {
             double pRun = 0, lRun = 0, tRun = 0;
 
-            
-            // GENERATE DATA SAAT OPERASI BERJALAN (Otomatis)
-            if (modeManual) {
-                pRun = pInput; lRun = lInput; tRun = tInput;
+            // Pakai inputan user JIKA ADA, generate otomatis JIKA KOSONG
+            if (namaBangun.equals("Persegi Panjang")) {
+                pRun = isPManual ? pInput : (Math.random() * 40) + 5;
+                lRun = isLManual ? lInput : (Math.random() * 40) + 5;
+                
+                // Masukkan hasil ke keranjang (Shared Memory)
+                sharedBaseData[i - 1][0] = pRun;
+                sharedBaseData[i - 1][1] = lRun;
+                
             } else {
-                if (namaBangun.equals("Persegi Panjang")) {
-                    // 1. Persegi Panjang bertugas membuat data P dan L secara random
-                    PersegiPanjang generator = new PersegiPanjang();
-                    pRun = generator.panjang;
-                    lRun = generator.lebar;
-                    
-                    // Memasukkan hasil random ke dalam keranjang (Shared Memory)
-                    sharedBaseData[i - 1][0] = pRun;
-                    sharedBaseData[i - 1][1] = lRun;
-                    
-                } else {
-                    // 2. Prisma dan Limas bertugas mengambil data.
-                    // Jika Persegi Panjang belum membuat data untuk baris ini (masih 0.0), TUNGGU!
-                    while (sharedBaseData[i - 1][0] == 0.0) {
-                        try {
-                            Thread.sleep(1); // Menunggu 1 milidetik lalu cek keranjang lagi
-                        } catch (InterruptedException e) {}
-                    }
-                    
-                    // Setelah data tersedia, ambil!
-                    pRun = sharedBaseData[i - 1][0];
-                    lRun = sharedBaseData[i - 1][1];
-                    
-                    // Setelah dapat P dan L dari Persegi, baru bangun 3D me-random Tingginya sendiri
-                    tRun = (Math.random() * 40) + 5; 
+                // Prisma dan Limas (3D) menunggu P dan L dari keranjang Persegi Panjang
+                while (sharedBaseData[i - 1][0] == 0.0) {
+                    try { Thread.sleep(1); } catch (InterruptedException e) {}
                 }
+                pRun = sharedBaseData[i - 1][0];
+                lRun = sharedBaseData[i - 1][1];
+                
+                // Tinggi (T) ditentukan khusus untuk 3D. Pakai input jika ada, otomatis jika kosong.
+                tRun = isTManual ? tInput : (Math.random() * 40) + 5; 
             }
-            
 
             double luas = 0, volume = 0, keliling = 0;
             String paramStr = "";
 
             switch (namaBangun) {
                 case "Persegi Panjang":
-                    //                instansisasi
                     PersegiPanjang persegi = new PersegiPanjang(pRun, lRun);
-                    if (modeManual) {
-                        luas = persegi.menghitungLuas(pRun, lRun);
-                        keliling = persegi.menghitungKeliling(pRun, lRun);
-                    } else {
-                        luas = persegi.menghitungLuas();
-                        keliling = persegi.menghitungKeliling();
-                    }   paramStr = String.format("P=%.1f, L=%.1f", pRun, lRun);
+                    luas = persegi.menghitungLuas(pRun, lRun);
+                    keliling = persegi.menghitungKeliling(pRun, lRun);
+                    paramStr = String.format("P=%.1f, L=%.1f", pRun, lRun);
                     break;
                 case "Prisma Segi Empat":
-                    //                instansiasi
-                    PersegiPanjang prisma = new PrismaPersegiPanjang(pRun, lRun, tRun);
-                    if (modeManual) {
-                        luas = prisma.menghitungLuasPermukaan(pRun, lRun, tRun);
-                        keliling = prisma.menghitungKeliling(pRun, lRun);
-                        volume = prisma.menghitungVolume(pRun, lRun, tRun);
-                    } else {
-                        luas = prisma.menghitungLuasPermukaan();
-                        keliling = prisma.menghitungKeliling();
-                        volume = prisma.menghitungVolume();
-                    }   paramStr = String.format("P=%.1f, L=%.1f, T=%.1f", pRun, lRun, tRun);
+                    PrismaPersegiPanjang prisma = new PrismaPersegiPanjang(pRun, lRun, tRun);
+                    luas = prisma.menghitungLuasPermukaan(pRun, lRun, tRun);
+                    keliling = prisma.menghitungKeliling(pRun, lRun);
+                    volume = prisma.menghitungVolume(pRun, lRun, tRun);
+                    paramStr = String.format("P=%.1f, L=%.1f, T=%.1f", pRun, lRun, tRun);
                     break;
                 case "Limas Segi Empat":
-                    //                instansiasi
-                    PersegiPanjang limas = new LimasPersegiPanjang(pRun, lRun, tRun);
-                    if (modeManual) {
-                        luas = limas.menghitungLuasPermukaan(pRun, lRun, tRun);
-                        keliling = limas.menghitungKeliling(pRun, lRun);
-                        volume = limas.menghitungVolume(pRun, lRun, tRun);
-                    } else {
-                        luas = limas.menghitungLuasPermukaan();
-                        keliling = limas.menghitungKeliling();
-                        volume = limas.menghitungVolume();
-                    }   paramStr = String.format("P=%.1f, L=%.1f, T=%.1f", pRun, lRun, tRun);
+                    LimasPersegiPanjang limas = new LimasPersegiPanjang(pRun, lRun, tRun);
+                    luas = limas.menghitungLuasPermukaan(pRun, lRun, tRun);
+                    keliling = limas.menghitungKeliling(pRun, lRun);
+                    volume = limas.menghitungVolume(pRun, lRun, tRun);
+                    paramStr = String.format("P=%.1f, L=%.1f, T=%.1f", pRun, lRun, tRun);
                     break;
                 default:
                     break;

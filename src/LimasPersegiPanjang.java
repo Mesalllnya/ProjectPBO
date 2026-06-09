@@ -44,4 +44,9 @@ public class LimasPersegiPanjang extends PersegiPanjang {
         this.volumeLimas = (super.menghitungLuas(p, l) * t) / 3.0;
         return this.volumeLimas;
     }
+    
+      @Override
+    public double menghitungKeliling() {
+        return 0;
+    }
 }

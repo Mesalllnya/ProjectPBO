@@ -5,6 +5,7 @@ public class PersegiPanjang implements Geometri {
     public double keliling;
 
     // CONSTRUCTOR 1: TANPA PARAMETER (Otomatis generate nilai random 5 - 45)
+    // Math.random() akan mengenerate angka dengan nilai dari 0.0 hingga kurang dari 1
     public PersegiPanjang() {
         this.panjang = (Math.random() * 40) + 5;
         this.lebar = (Math.random() * 40) + 5;
@@ -54,7 +55,7 @@ public class PersegiPanjang implements Geometri {
 
     @Override
     public double menghitungLuasPermukaan(double p, double l, double t) {
-        return menghitungLuas(p, l);
+        return 0;
     }
 
     @Override
