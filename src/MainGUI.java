@@ -56,7 +56,7 @@ public class MainGUI extends JFrame {
         JPanel panelKonfig = new JPanel(new GridLayout(6, 1, 2, 2));
         panelKonfig.setBorder(BorderFactory.createTitledBorder("Konfigurasi Proses"));
         JPanel pnlJumlah = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-        pnlJumlah.add(new JLabel("Jml Data: "));
+        pnlJumlah.add(new JLabel("Jumlah Data: "));
         txtJumlahData = new JTextField("10000", 6);
         pnlJumlah.add(txtJumlahData);
         JPanel pnlDimensi = new JPanel(new FlowLayout(FlowLayout.LEFT, 2, 0));
@@ -202,7 +202,7 @@ public class MainGUI extends JFrame {
             // Error ini terpanggil jika text field diisi huruf atau karakter non-angka
             JOptionPane.showMessageDialog(this, "Pastikan Jumlah Data, Panjang, Lebar, dan Tinggi diisi dengan format angka yang valid!", "Error Format Angka", JOptionPane.ERROR_MESSAGE);
         } catch (Exception ex) {
-            // Error ini terpanggil dari 'throw new Exception' yang kita buat di atas
+            // Error ini terpanggil dari 'throw new Exception' yang sudah di buat di atas
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Peringatan Validasi", JOptionPane.WARNING_MESSAGE);
         }
     }
@@ -214,12 +214,20 @@ public class MainGUI extends JFrame {
         String textL = txtLebar.getText().trim();
         String textT = txtTinggi.getText().trim();
         
-        // Cek input masing-masing secara MANDIRI (tidak lagi digabung menjadi satu mode)
+        // Cek input apakah null atau tidak
         boolean isPManual = !textP.isEmpty();
         boolean isLManual = !textL.isEmpty();
         boolean isTManual = !textT.isEmpty();
         
         // Parsing nilai jika diisi, biarkan 0 jika kosong
+//        versi if else yang panjang
+//        double pInput;
+//        if(isPManual){
+//            pInput = Double.parseDouble(textP);
+//        }else{
+//            pInput = 0;
+//        }
+//      versi yang dipersingkat
         double pInput = isPManual ? Double.parseDouble(textP) : 0;
         double lInput = isLManual ? Double.parseDouble(textL) : 0;
         double tInput = isTManual ? Double.parseDouble(textT) : 0;
@@ -259,14 +267,15 @@ public class MainGUI extends JFrame {
                     paramStr = String.format("P=%.1f, L=%.1f", pRun, lRun);
                     break;
                 case "Prisma Segi Empat":
-                    PrismaPersegiPanjang prisma = new PrismaPersegiPanjang(pRun, lRun, tRun);
+//                    polymorphism
+                    PersegiPanjang prisma = new PrismaPersegiPanjang(pRun, lRun, tRun);
                     luas = prisma.menghitungLuasPermukaan(pRun, lRun, tRun);
                     keliling = prisma.menghitungKeliling(pRun, lRun);
                     volume = prisma.menghitungVolume(pRun, lRun, tRun);
                     paramStr = String.format("P=%.1f, L=%.1f, T=%.1f", pRun, lRun, tRun);
                     break;
                 case "Limas Segi Empat":
-                    LimasPersegiPanjang limas = new LimasPersegiPanjang(pRun, lRun, tRun);
+                    PersegiPanjang limas = new LimasPersegiPanjang(pRun, lRun, tRun);
                     luas = limas.menghitungLuasPermukaan(pRun, lRun, tRun);
                     keliling = limas.menghitungKeliling(pRun, lRun);
                     volume = limas.menghitungVolume(pRun, lRun, tRun);

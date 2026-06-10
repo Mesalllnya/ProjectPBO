@@ -4,23 +4,28 @@ public class PersegiPanjang implements Geometri {
     public double luas;
     public double keliling;
 
-    // CONSTRUCTOR 1: TANPA PARAMETER (Otomatis generate nilai random 5 - 45)
+    // TANPA PARAMETER (Otomatis generate nilai random 5 - 45)
     // Math.random() akan mengenerate angka dengan nilai dari 0.0 hingga kurang dari 1
     public PersegiPanjang() {
         this.panjang = (Math.random() * 40) + 5;
         this.lebar = (Math.random() * 40) + 5;
     }
 
-    // CONSTRUCTOR 2: DENGAN PARAMETER (Menerima input dinamis)
+    // DENGAN PARAMETER (Menerima input dinamis)
     public PersegiPanjang(double panjang, double lebar) {
         this.panjang = panjang;
         this.lebar = lebar;
     }
 
-    // --- IMPLEMENTASI TANPA PARAMETER ---
     @Override
     public double menghitungLuas() {
         this.luas = panjang * lebar;
+        return this.luas;
+    }
+
+    @Override
+    public double menghitungLuas(double p, double l) {
+        this.luas = p * l;
         return this.luas;
     }
 
@@ -31,30 +36,23 @@ public class PersegiPanjang implements Geometri {
     }
 
     @Override
-    public double menghitungLuasPermukaan() {
-        return menghitungLuas();
-    }
-
-    @Override
-    public double menghitungVolume() {
-        return 0;
-    }
-
-    // --- IMPLEMENTASI DENGAN PARAMETER ---
-    @Override
-    public double menghitungLuas(double p, double l) {
-        this.luas = p * l;
-        return this.luas;
-    }
-
-    @Override
     public double menghitungKeliling(double p, double l) {
         this.keliling = 2 * (p + l);
         return this.keliling;
     }
 
     @Override
+    public double menghitungLuasPermukaan() {
+        return menghitungLuas();
+    }
+
+    @Override
     public double menghitungLuasPermukaan(double p, double l, double t) {
+        return 0;
+    }
+    
+    @Override
+    public double menghitungVolume() {
         return 0;
     }
 
