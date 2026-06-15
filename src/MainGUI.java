@@ -215,6 +215,8 @@ public class MainGUI extends JFrame {
         String textT = txtTinggi.getText().trim();
         
         // Cek input apakah null atau tidak
+        // jika textP.isEmpty() tidak di isi maka akan berisi true lalu ketemu tanda "!" di inverse 
+        // kesimpulannya adalah ketika ketika kolom input di isi maka isPManual akan true dan jika kosong maka false 
         boolean isPManual = !textP.isEmpty();
         boolean isLManual = !textL.isEmpty();
         boolean isTManual = !textT.isEmpty();
@@ -228,6 +230,7 @@ public class MainGUI extends JFrame {
 //            pInput = 0;
 //        }
 //      versi yang dipersingkat
+// jadi tuh di cek dulu apakah isPManual ini true atau false jika true maka pakai input user jika false maka 0
         double pInput = isPManual ? Double.parseDouble(textP) : 0;
         double lInput = isLManual ? Double.parseDouble(textL) : 0;
         double tInput = isTManual ? Double.parseDouble(textT) : 0;
@@ -237,6 +240,7 @@ public class MainGUI extends JFrame {
 
             // Pakai inputan user JIKA ADA, generate otomatis JIKA KOSONG
             if (namaBangun.equals("Persegi Panjang")) {
+                // cek isPmanual jika true maka menggunakan valur pInput dan jika false generate angka dari 5 - 45
                 pRun = isPManual ? pInput : (Math.random() * 40) + 5;
                 lRun = isLManual ? lInput : (Math.random() * 40) + 5;
                 
@@ -261,23 +265,33 @@ public class MainGUI extends JFrame {
 
             switch (namaBangun) {
                 case "Persegi Panjang":
-                    PersegiPanjang persegi = new PersegiPanjang(pRun, lRun);
-                    luas = persegi.menghitungLuas(pRun, lRun);
-                    keliling = persegi.menghitungKeliling(pRun, lRun);
+                    PersegiPanjang persegi = new PersegiPanjang();
+                    luas=persegi.menghitungLuas();
+                    keliling = persegi.menghitungKeliling();
+//                    luas = persegi.menghitungLuas(pRun, lRun);
+//                    keliling = persegi.menghitungKeliling(pRun, lRun);
                     paramStr = String.format("P=%.1f, L=%.1f", pRun, lRun);
                     break;
                 case "Prisma Segi Empat":
 //                    polymorphism
-                    PersegiPanjang prisma = new PrismaPersegiPanjang(pRun, lRun, tRun);
-                    luas = prisma.menghitungLuasPermukaan(pRun, lRun, tRun);
-                    keliling = prisma.menghitungKeliling(pRun, lRun);
-                    volume = prisma.menghitungVolume(pRun, lRun, tRun);
+                    PersegiPanjang prisma = new PrismaPersegiPanjang();
+                    luas = prisma.menghitungLuasPermukaan();
+                    keliling = prisma.menghitungKeliling();
+                    volume = prisma.menghitungVolume();
+//                    double pris = prisma.menghitungLuas(); //buat nunjukin bawhwa polymorphism bekerja
+//                    luas = prisma.menghitungLuasPermukaan(pRun, lRun, tRun);
+//                    keliling = prisma.menghitungKeliling(pRun, lRun);
+//                    volume = prisma.menghitungVolume(pRun, lRun, tRun);
                     paramStr = String.format("P=%.1f, L=%.1f, T=%.1f", pRun, lRun, tRun);
                     break;
                 case "Limas Segi Empat":
-                    PersegiPanjang limas = new LimasPersegiPanjang(pRun, lRun, tRun);
-                    luas = limas.menghitungLuasPermukaan(pRun, lRun, tRun);
-                    keliling = limas.menghitungKeliling(pRun, lRun);
+//                    polymorphism                    
+                    PersegiPanjang limas = new LimasPersegiPanjang();
+                    luas = limas.menghitungLuasPermukaan();
+                    keliling = limas.menghitungKeliling();
+//                    double lim = limas.menghitungKeliling(); //buat nunjukin bawhwa polymorphism bekerja
+//                    luas = limas.menghitungLuasPermukaan(pRun, lRun, tRun);
+//                    keliling = limas.menghitungKeliling(pRun, lRun);
                     volume = limas.menghitungVolume(pRun, lRun, tRun);
                     paramStr = String.format("P=%.1f, L=%.1f, T=%.1f", pRun, lRun, tRun);
                     break;

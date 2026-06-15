@@ -31,7 +31,7 @@ public class PersegiPanjang implements Geometri {
 
     @Override
     public double menghitungKeliling() {
-        this.keliling = 2 * (panjang + lebar);
+        this.keliling = 2 * (this.panjang + this.lebar);
         return this.keliling;
     }
 

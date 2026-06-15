@@ -27,7 +27,7 @@ public class PrismaPersegiPanjang extends PersegiPanjang {
 
     @Override
     public double menghitungVolume() {
-        this.volumePrisma = super.menghitungLuas() * this.tinggi;
+        this.volumePrisma = super.luas * this.tinggi;
         return this.volumePrisma;
     }
 
