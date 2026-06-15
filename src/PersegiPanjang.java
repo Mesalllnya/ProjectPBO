@@ -1,4 +1,4 @@
-public class PersegiPanjang implements Geometri {
+public class PersegiPanjang implements Geometri2D {
     public double panjang;
     public double lebar;
     public double luas;
@@ -41,23 +41,23 @@ public class PersegiPanjang implements Geometri {
         return this.keliling;
     }
 
-    @Override
-    public double menghitungLuasPermukaan() {
-        return menghitungLuas();
-    }
-
-    @Override
-    public double menghitungLuasPermukaan(double p, double l, double t) {
-        return 0;
-    }
-    
-    @Override
-    public double menghitungVolume() {
-        return 0;
-    }
-
-    @Override
-    public double menghitungVolume(double p, double l, double t) {
-        return 0;
-    }
+//    @Override
+//    public double menghitungLuasPermukaan() {
+//        return menghitungLuas();
+//    }
+//
+//    @Override
+//    public double menghitungLuasPermukaan(double p, double l, double t) {
+//        return 0;
+//    }
+//    
+//    @Override
+//    public double menghitungVolume() {
+//        return 0;
+//    }
+//
+//    @Override
+//    public double menghitungVolume(double p, double l, double t) {
+//        return 0;
+//    }
 }

@@ -1,4 +1,4 @@
-public class LimasPersegiPanjang extends PersegiPanjang {
+public class LimasPersegiPanjang extends PersegiPanjang implements Geometri3D {
     public double tinggi;
     public double luasPermukaanLimas;
     public double volumeLimas;
