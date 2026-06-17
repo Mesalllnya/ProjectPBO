@@ -136,12 +136,12 @@ public class MainGUI extends JFrame {
             
             // Mengecek Jumlah data tidak boleh 0 atau kurang dari 0
             if (jumlahData <= 0) {
-                throw new Exception("Jumlah data harus lebih besar dari 0!");
+                throw new GeometriInvalidException("Jumlah data harus lebih besar dari 0!");
             }
 
             // Mengecek Minimal harus ada satu checkbox yang dicentang
             if (!chkPersegi.isSelected() && !chkPrisma.isSelected() && !chkLimas.isSelected()) {
-                throw new Exception("Anda harus mencentang minimal satu pilihan bangun geometri!");
+                throw new GeometriInvalidException("Anda harus mencentang minimal satu pilihan bangun geometri!");
             }
             
             // Mengecek Persegi Panjang WAJIB dicentang jika 3D dicentang
@@ -159,16 +159,16 @@ public class MainGUI extends JFrame {
 
             if (!textP.isEmpty()) {
                 double p = Double.parseDouble(textP);
-                if (p <= 0) throw new Exception("Nilai Panjang harus lebih besar dari 0!");
+                if (p <= 0) throw new GeometriInvalidException("Nilai Panjang harus lebih besar dari 0!");
             }
             if (!textL.isEmpty()) {
                 double l = Double.parseDouble(textL);
-                if (l <= 0) throw new Exception("Nilai Lebar harus lebih besar dari 0!");
+                if (l <= 0) throw new GeometriInvalidException("Nilai Lebar harus lebih besar dari 0!");
             }
             // Validasi tinggi HANYA berjalan jika kolom tidak kosong DAN user memilih Prisma atau Limas (Bangun 3D)
             if (!textT.isEmpty() && (chkPrisma.isSelected() || chkLimas.isSelected())) {
                 double t = Double.parseDouble(textT);
-                if (t <= 0) throw new Exception("Nilai Tinggi harus lebih besar dari 0!");
+                if (t <= 0) throw new GeometriInvalidException("Nilai Tinggi harus lebih besar dari 0!");
             }
 
             // Jika lolos semua validasi, mulai reset dan jalankan program

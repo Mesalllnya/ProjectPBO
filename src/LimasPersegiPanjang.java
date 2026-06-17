@@ -1,4 +1,4 @@
-public class LimasPersegiPanjang extends PersegiPanjang implements Geometri3D {
+public class LimasPersegiPanjang extends PersegiPanjang {
     public double tinggi;
     public double luasPermukaanLimas;
     public double volumeLimas;
@@ -20,17 +20,17 @@ public class LimasPersegiPanjang extends PersegiPanjang implements Geometri3D {
 
     @Override
     public double menghitungLuasPermukaan() {
-         tSegiLebar = Math.sqrt(Math.pow(super.panjang / 2.0, 2) + Math.pow(this.tinggi, 2));
-         tSegiPanjang = Math.sqrt(Math.pow(super.lebar / 2.0, 2) + Math.pow(this.tinggi, 2));
-        this.luasPermukaanLimas = super.luas + (super.panjang * tSegiPanjang) + (super.lebar * tSegiLebar);
+         this.tSegiLebar = Math.sqrt(Math.pow(super.panjang / 2.0, 2) + Math.pow(this.tinggi, 2));
+         this.tSegiPanjang = Math.sqrt(Math.pow(super.lebar / 2.0, 2) + Math.pow(this.tinggi, 2));
+        this.luasPermukaanLimas = super.luas + (super.panjang * this.tSegiPanjang) + (super.lebar * this.tSegiLebar);
         return this.luasPermukaanLimas;
     }
 
     @Override
     public double menghitungLuasPermukaan(double p, double l, double t) {
-        tSegiLebar = Math.sqrt(Math.pow(p / 2.0, 2) + Math.pow(t, 2));
-        tSegiPanjang = Math.sqrt(Math.pow(l / 2.0, 2) + Math.pow(t, 2));
-        this.luasPermukaanLimas = super.menghitungLuas(p, l) + (p * tSegiPanjang) + (l * tSegiLebar);
+        this.tSegiLebar = Math.sqrt(Math.pow(p / 2.0, 2) + Math.pow(t, 2));
+        this.tSegiPanjang = Math.sqrt(Math.pow(l / 2.0, 2) + Math.pow(t, 2));
+        this.luasPermukaanLimas = super.menghitungLuas(p, l) + (p * this.tSegiPanjang) + (l * this.tSegiLebar);
         return this.luasPermukaanLimas;
     }
 
@@ -46,13 +46,13 @@ public class LimasPersegiPanjang extends PersegiPanjang implements Geometri3D {
         return this.volumeLimas;
     }
     
-    @Override
-    public double menghitungKeliling() {
-        return 0;
-    }
-    
-    @Override
-    public double menghitungKeliling(double p, double l) {
-        return 0;
-    }
+//    @Override
+//    public double menghitungKeliling() {
+//        return 0;
+//    }
+//    
+//    @Override
+//    public double menghitungKeliling(double p, double l) {
+//        return 0;
+//    }
 }

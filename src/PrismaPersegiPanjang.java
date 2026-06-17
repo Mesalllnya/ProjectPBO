@@ -1,4 +1,4 @@
-public class PrismaPersegiPanjang extends PersegiPanjang implements Geometri3D {
+public class PrismaPersegiPanjang extends PersegiPanjang {
     public double tinggi;
     public double luasPermukaanPrisma;
     public double volumePrisma;
@@ -37,13 +37,13 @@ public class PrismaPersegiPanjang extends PersegiPanjang implements Geometri3D {
         return this.volumePrisma;
     }
     
-    @Override
-    public double menghitungKeliling() {
-        return 0;
-    }
-    
-    @Override
-    public double menghitungKeliling(double p, double l) {
-        return 0;
-    }
+//    @Override
+//    public double menghitungKeliling() {
+//        return 0;
+//    }
+//    
+//    @Override
+//    public double menghitungKeliling(double p, double l) {
+//        return 0;
+//    }
 }
