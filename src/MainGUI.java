@@ -176,13 +176,20 @@ public class MainGUI extends JFrame {
                 dataAlas[i][2] = p * l; // Slot Luas Alas
                 dataAlas[i][3] = t; // Slot Tinggi
             }
+            
+            // Menggunakan Polimorfisme:
+            PersegiPanjang persegi = new PersegiPanjang(this, jumlahData, "Thread Segi4 (2D)", progPersegi, dataAlas);
+            PersegiPanjang prisma = new PrismaPersegiPanjang(this, jumlahData, "Thread Prisma (3D)", progPrisma, dataAlas);
+            PersegiPanjang limas = new LimasPersegiPanjang(this, jumlahData, "Thread Limas (3D)", progLimas, dataAlas);
 
-            // PEMBUATAN THREAD
-            Thread threadPersegi = new Thread(new PersegiPanjang(this, jumlahData, "Thread Segi4 (2D)", progPersegi, dataAlas));
-            Thread threadPrisma = new Thread(new PrismaPersegiPanjang(this, jumlahData, "Thread Prisma (3D)", progPrisma, dataAlas));
-            Thread threadLimas = new Thread(new LimasPersegiPanjang(this, jumlahData, "Thread Limas (3D)", progLimas, dataAlas));
+//            double k = prisma.menghitungLuas();
+            
+            // Bisa langsung dimasukkan karena PersegiPanjang sudah 'implements Runnable'
+            Thread threadPersegi = new Thread(persegi);
+            Thread threadPrisma = new Thread(prisma);
+            Thread threadLimas = new Thread(limas);
 
-            // Mulai balapan!
+            // 3. Mulai balapan!
             threadPersegi.start();
             if (chkPrisma.isSelected()) threadPrisma.start();
             if (chkLimas.isSelected()) threadLimas.start();

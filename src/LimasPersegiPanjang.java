@@ -33,13 +33,12 @@ public class LimasPersegiPanjang extends PersegiPanjang implements Geometri3D {
         Vector<Vector<Object>> batchData = new Vector<>();
 
         for (int i = 0; i < batasData; i++) {
-            // Cukup perbarui atribut milik dirinya sendiri (objek Thread ini)
             super.panjang = dataAlas[i][0];
             super.lebar = dataAlas[i][1];
-            super.luas = dataAlas[i][2]; // Luas alas langsung diisi
+            super.luas = dataAlas[i][2]; 
             this.tinggi = dataAlas[i][3];
 
-            // Komputer akan otomatis menghitung menggunakan data yang baru saja di-update di atas
+            // Langsung panggil methodnya. Komputer akan menggunakan atribut yang baru saja diupdate
             double luasHitung = this.menghitungLuasPermukaan();
             double volumeHitung = this.menghitungVolume();
             double kelilingHitung = 0; 

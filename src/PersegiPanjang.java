@@ -37,15 +37,11 @@ public class PersegiPanjang implements Geometri, Runnable {
         Vector<Vector<Object>> batchData = new Vector<>();
 
         for (int i = 0; i < batasData; i++) {
-            // 1. JANGAN BUAT OBJEK BARU! 
-            // Cukup perbarui atribut milik dirinya sendiri (objek Thread ini)
             this.panjang = dataAlas[i][0];
             this.lebar = dataAlas[i][1];
             this.luas = dataAlas[i][2]; // Luas alas langsung diisi
 //            this.tinggi = dataAlas[i][3];
 
-            // 2. Langsung panggil method perhitungannya!
-            // Komputer akan otomatis menghitung menggunakan data yang baru saja di-update di atas
             double luasHitung = this.menghitungLuas();
             double volumeHitung = 0;
             double kelilingHitung = this.menghitungKeliling(); 

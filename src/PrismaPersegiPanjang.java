@@ -25,13 +25,12 @@ public class PrismaPersegiPanjang extends PersegiPanjang implements Geometri3D {
         Vector<Vector<Object>> batchData = new Vector<>();
 
         for (int i = 0; i < batasData; i++) {
-            // Cukup perbarui atribut milik dirinya sendiri
             super.panjang = dataAlas[i][0];
             super.lebar = dataAlas[i][1];
-            super.luas = dataAlas[i][2]; // Luas alas langsung diisi
+            super.luas = dataAlas[i][2]; 
             this.tinggi = dataAlas[i][3];
 
-            
+            // Langsung panggil methodnya. Komputer akan menggunakan atribut yang baru saja diupdate
             double luasHitung = this.menghitungLuasPermukaan();
             double volumeHitung = this.menghitungVolume();
             double kelilingHitung = 0; 
@@ -40,7 +39,7 @@ public class PrismaPersegiPanjang extends PersegiPanjang implements Geometri3D {
 
             Vector<Object> baris = new Vector<>();
             baris.add(gui.totalBaris + i + 1); 
-            baris.add("Prisma Segi Empat");
+            baris.add("Prisma Segi Empat"); // (Ubah jadi Prisma Segi Empat jika di file Prisma)
             baris.add(paramStr);
             baris.add(String.format("%.2f", luasHitung));
             baris.add(String.format("%.2f", volumeHitung));
