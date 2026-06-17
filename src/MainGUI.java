@@ -20,7 +20,7 @@ public class MainGUI extends JFrame {
     
     // Array sebagai "Keranjang" (Shared Memory) antar thread
     // Menggunakan volatile agar update dari Persegi langsung terbaca oleh Prisma/Limas
-    public volatile double[][] sharedBaseData;
+//    public volatile double[][] sharedBaseData;
 
     public MainGUI() {
         setTitle("Perhitungan Geometri (Multithreading)");
@@ -131,206 +131,193 @@ public class MainGUI extends JFrame {
 
     public void mulaiProses() {
         try {
-            // 1. Ambil input jumlah data
             int jumlahData = Integer.parseInt(txtJumlahData.getText());
-            
-            // Mengecek Jumlah data tidak boleh 0 atau kurang dari 0
-            if (jumlahData <= 0) {
-                throw new GeometriInvalidException("Jumlah data harus lebih besar dari 0!");
-            }
-
-            // Mengecek Minimal harus ada satu checkbox yang dicentang
+            if (jumlahData <= 0) throw new GeometriInvalidException("Jumlah data harus lebih besar dari 0!");
             if (!chkPersegi.isSelected() && !chkPrisma.isSelected() && !chkLimas.isSelected()) {
-                throw new GeometriInvalidException("Anda harus mencentang minimal satu pilihan bangun geometri!");
+                throw new GeometriInvalidException("Minimal centang satu bangun!");
             }
-            
-            // Mengecek Persegi Panjang WAJIB dicentang jika 3D dicentang
-            if (!chkPersegi.isSelected()) {
-                if (chkPrisma.isSelected() || chkLimas.isSelected()) {
-                    JOptionPane.showMessageDialog(this, "Persegi Panjang WAJIB dicentang karena bangun 3D membutuhkan datanya!", "Peringatan", JOptionPane.WARNING_MESSAGE);
-                }
+            if (!chkPersegi.isSelected() && (chkPrisma.isSelected() || chkLimas.isSelected())) {
+                JOptionPane.showMessageDialog(this, "Persegi Panjang WAJIB dicentang!", "Peringatan", JOptionPane.WARNING_MESSAGE);
                 return;
             }
 
-            // Mengecek Input manual dimensi tidak boleh 0 atau negatif
+            // Ambil Input
             String textP = txtPanjang.getText().trim();
             String textL = txtLebar.getText().trim();
             String textT = txtTinggi.getText().trim();
-
-            if (!textP.isEmpty()) {
-                double p = Double.parseDouble(textP);
-                if (p <= 0) throw new GeometriInvalidException("Nilai Panjang harus lebih besar dari 0!");
-            }
-            if (!textL.isEmpty()) {
-                double l = Double.parseDouble(textL);
-                if (l <= 0) throw new GeometriInvalidException("Nilai Lebar harus lebih besar dari 0!");
-            }
-            // Validasi tinggi HANYA berjalan jika kolom tidak kosong DAN user memilih Prisma atau Limas (Bangun 3D)
+            
+            boolean isPManual = !textP.isEmpty();
+            boolean isLManual = !textL.isEmpty();
+            boolean isTManual = !textT.isEmpty();
+            
+            double pInput = isPManual ? Double.parseDouble(textP) : 0;
+            double lInput = isLManual ? Double.parseDouble(textL) : 0;
+            // Validasi Input
+            if (isPManual && pInput <= 0) throw new GeometriInvalidException("P harus > 0");
+            if (isLManual && lInput <= 0) throw new GeometriInvalidException("L harus > 0");
+        
+            double tInput = isTManual ? Double.parseDouble(textT) : 0;
             if (!textT.isEmpty() && (chkPrisma.isSelected() || chkLimas.isSelected())) {
-                double t = Double.parseDouble(textT);
-                if (t <= 0) throw new GeometriInvalidException("Nilai Tinggi harus lebih besar dari 0!");
+                if (Double.parseDouble(textT) <= 0) throw new GeometriInvalidException("Tinggi harus > 0");
             }
-
-            // Jika lolos semua validasi, mulai reset dan jalankan program
             resetGUI();
             startTime = System.currentTimeMillis();
-            
-            // Menyiapkan keranjang kosong
-            sharedBaseData = new double[jumlahData][2];
 
-            // 1. Thread Persegi
-            Thread threadPersegi = new Thread(() -> {
-                prosesKalkulasiBangun("Persegi Panjang", "Thread Segi4 (2D)", jumlahData, progPersegi);
-            });
+            double[][] dataAlas = new double[jumlahData][4]; 
+            for (int i = 0; i < jumlahData; i++) {
+                double p = isPManual ? pInput : (Math.random() * 40) + 5;
+                double l = isLManual ? lInput : (Math.random() * 40) + 5;
 
-            // 2. Thread Prisma
-            Thread threadPrisma = new Thread(() -> {
-                prosesKalkulasiBangun("Prisma Segi Empat", "Thread Prisma (3D)", jumlahData, progPrisma);
-            });
+                // Logika pembuatan T dilakukan di sini, SATU KALI SAJA di MainGUI
+                double t = isTManual ? tInput : (Math.random() * 40) + 5; 
 
-            // 3. Thread Limas
-            Thread threadLimas = new Thread(() -> {
-                prosesKalkulasiBangun("Limas Segi Empat", "Thread Limas (3D)", jumlahData, progLimas);
-            });
+                dataAlas[i][0] = p; // Slot Panjang
+                dataAlas[i][1] = l; // Slot Lebar
+                dataAlas[i][2] = p * l; // Slot Luas Alas
+                dataAlas[i][3] = t; // Slot Tinggi
+            }
 
-            // Mulai jalankan thread secara paralel
+            // PEMBUATAN THREAD
+            Thread threadPersegi = new Thread(new PersegiPanjang(this, jumlahData, "Thread Segi4 (2D)", progPersegi, dataAlas));
+            Thread threadPrisma = new Thread(new PrismaPersegiPanjang(this, jumlahData, "Thread Prisma (3D)", progPrisma, dataAlas));
+            Thread threadLimas = new Thread(new LimasPersegiPanjang(this, jumlahData, "Thread Limas (3D)", progLimas, dataAlas));
+
+            // Mulai balapan!
             threadPersegi.start();
             if (chkPrisma.isSelected()) threadPrisma.start();
             if (chkLimas.isSelected()) threadLimas.start();
 
         } catch (NumberFormatException ex) {
-            // Error ini terpanggil jika text field diisi huruf atau karakter non-angka
-            JOptionPane.showMessageDialog(this, "Pastikan Jumlah Data, Panjang, Lebar, dan Tinggi diisi dengan format angka yang valid!", "Error Format Angka", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Pastikan input angka valid!", "Error", JOptionPane.ERROR_MESSAGE);
         } catch (Exception ex) {
-            // Error ini terpanggil dari 'throw new Exception' yang sudah di buat di atas
-            JOptionPane.showMessageDialog(this, ex.getMessage(), "Peringatan Validasi", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Peringatan", JOptionPane.WARNING_MESSAGE);
         }
     }
 
-    public void prosesKalkulasiBangun(String namaBangun, String namaThread, int batasData, JProgressBar progressBar) {
-        Vector<Vector<Object>> batchData = new Vector<>();
-        
-        String textP = txtPanjang.getText().trim();
-        String textL = txtLebar.getText().trim();
-        String textT = txtTinggi.getText().trim();
-        
-        // Cek input apakah null atau tidak
-        // jika textP.isEmpty() tidak di isi maka akan berisi true lalu ketemu tanda "!" di inverse 
-        // kesimpulannya adalah ketika ketika kolom input di isi maka isPManual akan true dan jika kosong maka false 
-        boolean isPManual = !textP.isEmpty();
-        boolean isLManual = !textL.isEmpty();
-        boolean isTManual = !textT.isEmpty();
-        
-        // Parsing nilai jika diisi, biarkan 0 jika kosong
-//        versi if else yang panjang
-//        double pInput;
-//        if(isPManual){
-//            pInput = Double.parseDouble(textP);
-//        }else{
-//            pInput = 0;
+//    public void prosesKalkulasiBangun(String namaBangun, String namaThread, int batasData, JProgressBar progressBar) {
+//        Vector<Vector<Object>> batchData = new Vector<>();
+//        
+//        String textP = txtPanjang.getText().trim();
+//        String textL = txtLebar.getText().trim();
+//        String textT = txtTinggi.getText().trim();
+//        
+//        // Cek input apakah null atau tidak
+//        // jika textP.isEmpty() tidak di isi maka akan berisi true lalu ketemu tanda "!" di inverse 
+//        // kesimpulannya adalah ketika ketika kolom input di isi maka isPManual akan true dan jika kosong maka false 
+//        boolean isPManual = !textP.isEmpty();
+//        boolean isLManual = !textL.isEmpty();
+//        boolean isTManual = !textT.isEmpty();
+//        
+//        // Parsing nilai jika diisi, biarkan 0 jika kosong
+////        versi if else yang panjang
+////        double pInput;
+////        if(isPManual){
+////            pInput = Double.parseDouble(textP);
+////        }else{
+////            pInput = 0;
+////        }
+////      versi yang dipersingkat
+//// jadi tuh di cek dulu apakah isPManual ini true atau false jika true maka pakai input user jika false maka 0
+//        double pInput = isPManual ? Double.parseDouble(textP) : 0;
+//        double lInput = isLManual ? Double.parseDouble(textL) : 0;
+//        double tInput = isTManual ? Double.parseDouble(textT) : 0;
+//        
+//        for (int i = 1; i <= batasData; i++) {
+//            double pRun = 0, lRun = 0, tRun = 0;
+//
+//            // Pakai inputan user JIKA ADA, generate otomatis JIKA KOSONG
+//            if (namaBangun.equals("Persegi Panjang")) {
+//                // cek isPmanual jika true maka menggunakan valur pInput dan jika false generate angka dari 5 - 45
+//                pRun = isPManual ? pInput : (Math.random() * 40) + 5;
+//                lRun = isLManual ? lInput : (Math.random() * 40) + 5;
+//                
+//                // Masukkan hasil ke keranjang (Shared Memory)
+//                sharedBaseData[i - 1][0] = pRun;
+//                sharedBaseData[i - 1][1] = lRun;
+//                
+//            } else {
+//                // Prisma dan Limas (3D) menunggu P dan L dari keranjang Persegi Panjang
+//                while (sharedBaseData[i - 1][0] == 0.0) {
+//                    try { Thread.sleep(1); } catch (InterruptedException e) {}
+//                }
+//                pRun = sharedBaseData[i - 1][0];
+//                lRun = sharedBaseData[i - 1][1];
+//                
+//                // Tinggi (T) ditentukan khusus untuk 3D. Pakai input jika ada, otomatis jika kosong.
+//                tRun = isTManual ? tInput : (Math.random() * 40) + 5; 
+//            }
+//
+//            double luas = 0, volume = 0, keliling = 0;
+//            String paramStr = "";
+//
+//            switch (namaBangun) {
+//                case "Persegi Panjang":
+//                    PersegiPanjang persegi = new PersegiPanjang();
+//                    luas=persegi.menghitungLuas();
+//                    keliling = persegi.menghitungKeliling();
+////                    luas = persegi.menghitungLuas(pRun, lRun);
+////                    keliling = persegi.menghitungKeliling(pRun, lRun);
+//                    paramStr = String.format("P=%.1f, L=%.1f", pRun, lRun);
+//                    break;
+//                case "Prisma Segi Empat":
+////                    polymorphism
+//                    PersegiPanjang prisma = new PrismaPersegiPanjang();
+//                    luas = prisma.menghitungLuasPermukaan();
+//                    keliling = prisma.menghitungKeliling();
+//                    volume = prisma.menghitungVolume();
+////                    double pris = prisma.menghitungLuas(); //buat nunjukin bawhwa polymorphism bekerja
+////                    luas = prisma.menghitungLuasPermukaan(pRun, lRun, tRun);
+////                    keliling = prisma.menghitungKeliling(pRun, lRun);
+////                    volume = prisma.menghitungVolume(pRun, lRun, tRun);
+//                    paramStr = String.format("P=%.1f, L=%.1f, T=%.1f", pRun, lRun, tRun);
+//                    break;
+//                case "Limas Segi Empat":
+////                    polymorphism                    
+//                    PersegiPanjang limas = new LimasPersegiPanjang();
+//                    luas = limas.menghitungLuasPermukaan();
+//                    keliling = limas.menghitungKeliling();
+////                    double lim = limas.menghitungKeliling(); //buat nunjukin bawhwa polymorphism bekerja
+////                    luas = limas.menghitungLuasPermukaan(pRun, lRun, tRun);
+////                    keliling = limas.menghitungKeliling(pRun, lRun);
+//                    volume = limas.menghitungVolume(pRun, lRun, tRun);
+//                    paramStr = String.format("P=%.1f, L=%.1f, T=%.1f", pRun, lRun, tRun);
+//                    break;
+//                default:
+//                    break;
+//            }
+//
+//            Vector<Object> baris = new Vector<>();
+//            baris.add(totalBaris + i); 
+//            baris.add(namaBangun);
+//            baris.add(paramStr);
+//            baris.add(String.format("%.2f", luas));
+//            baris.add(String.format("%.2f", volume));
+//            baris.add(String.format("%.2f", keliling));
+//            baris.add(namaThread);
+//            batchData.add(baris);
+//
+//            int persen = (int) (((double) i / batasData) * 100);
+//            if (i % 500 == 0 || i == batasData) {
+//                SwingUtilities.invokeLater(() -> {
+//                    progressBar.setValue(persen);
+//                    progressBar.setString(namaThread + " : " + persen + "%");
+//                });
+//            }
 //        }
-//      versi yang dipersingkat
-// jadi tuh di cek dulu apakah isPManual ini true atau false jika true maka pakai input user jika false maka 0
-        double pInput = isPManual ? Double.parseDouble(textP) : 0;
-        double lInput = isLManual ? Double.parseDouble(textL) : 0;
-        double tInput = isTManual ? Double.parseDouble(textT) : 0;
-        
-        for (int i = 1; i <= batasData; i++) {
-            double pRun = 0, lRun = 0, tRun = 0;
-
-            // Pakai inputan user JIKA ADA, generate otomatis JIKA KOSONG
-            if (namaBangun.equals("Persegi Panjang")) {
-                // cek isPmanual jika true maka menggunakan valur pInput dan jika false generate angka dari 5 - 45
-                pRun = isPManual ? pInput : (Math.random() * 40) + 5;
-                lRun = isLManual ? lInput : (Math.random() * 40) + 5;
-                
-                // Masukkan hasil ke keranjang (Shared Memory)
-                sharedBaseData[i - 1][0] = pRun;
-                sharedBaseData[i - 1][1] = lRun;
-                
-            } else {
-                // Prisma dan Limas (3D) menunggu P dan L dari keranjang Persegi Panjang
-                while (sharedBaseData[i - 1][0] == 0.0) {
-                    try { Thread.sleep(1); } catch (InterruptedException e) {}
-                }
-                pRun = sharedBaseData[i - 1][0];
-                lRun = sharedBaseData[i - 1][1];
-                
-                // Tinggi (T) ditentukan khusus untuk 3D. Pakai input jika ada, otomatis jika kosong.
-                tRun = isTManual ? tInput : (Math.random() * 40) + 5; 
-            }
-
-            double luas = 0, volume = 0, keliling = 0;
-            String paramStr = "";
-
-            switch (namaBangun) {
-                case "Persegi Panjang":
-                    PersegiPanjang persegi = new PersegiPanjang();
-                    luas=persegi.menghitungLuas();
-                    keliling = persegi.menghitungKeliling();
-//                    luas = persegi.menghitungLuas(pRun, lRun);
-//                    keliling = persegi.menghitungKeliling(pRun, lRun);
-                    paramStr = String.format("P=%.1f, L=%.1f", pRun, lRun);
-                    break;
-                case "Prisma Segi Empat":
-//                    polymorphism
-                    PersegiPanjang prisma = new PrismaPersegiPanjang();
-                    luas = prisma.menghitungLuasPermukaan();
-                    keliling = prisma.menghitungKeliling();
-                    volume = prisma.menghitungVolume();
-//                    double pris = prisma.menghitungLuas(); //buat nunjukin bawhwa polymorphism bekerja
-//                    luas = prisma.menghitungLuasPermukaan(pRun, lRun, tRun);
-//                    keliling = prisma.menghitungKeliling(pRun, lRun);
-//                    volume = prisma.menghitungVolume(pRun, lRun, tRun);
-                    paramStr = String.format("P=%.1f, L=%.1f, T=%.1f", pRun, lRun, tRun);
-                    break;
-                case "Limas Segi Empat":
-//                    polymorphism                    
-                    PersegiPanjang limas = new LimasPersegiPanjang();
-                    luas = limas.menghitungLuasPermukaan();
-                    keliling = limas.menghitungKeliling();
-//                    double lim = limas.menghitungKeliling(); //buat nunjukin bawhwa polymorphism bekerja
-//                    luas = limas.menghitungLuasPermukaan(pRun, lRun, tRun);
-//                    keliling = limas.menghitungKeliling(pRun, lRun);
-                    volume = limas.menghitungVolume(pRun, lRun, tRun);
-                    paramStr = String.format("P=%.1f, L=%.1f, T=%.1f", pRun, lRun, tRun);
-                    break;
-                default:
-                    break;
-            }
-
-            Vector<Object> baris = new Vector<>();
-            baris.add(totalBaris + i); 
-            baris.add(namaBangun);
-            baris.add(paramStr);
-            baris.add(String.format("%.2f", luas));
-            baris.add(String.format("%.2f", volume));
-            baris.add(String.format("%.2f", keliling));
-            baris.add(namaThread);
-            batchData.add(baris);
-
-            int persen = (int) (((double) i / batasData) * 100);
-            if (i % 500 == 0 || i == batasData) {
-                SwingUtilities.invokeLater(() -> {
-                    progressBar.setValue(persen);
-                    progressBar.setString(namaThread + " : " + persen + "%");
-                });
-            }
-        }
-
-        SwingUtilities.invokeLater(() -> {
-            for (Vector<Object> row : batchData) {
-                tableModel.addRow(row);
-            }
-            if (namaBangun.equals("Persegi Panjang")) countPersegi += batasData;
-            if (namaBangun.equals("Prisma Segi Empat")) countPrisma += batasData;
-            if (namaBangun.equals("Limas Segi Empat")) countLimas += batasData;
-            totalBaris += batasData;
-            
-            updateStatistik();
-            cekWaktuSelesai();
-        });
-    }
+//
+//        SwingUtilities.invokeLater(() -> {
+//            for (Vector<Object> row : batchData) {
+//                tableModel.addRow(row);
+//            }
+//            if (namaBangun.equals("Persegi Panjang")) countPersegi += batasData;
+//            if (namaBangun.equals("Prisma Segi Empat")) countPrisma += batasData;
+//            if (namaBangun.equals("Limas Segi Empat")) countLimas += batasData;
+//            totalBaris += batasData;
+//            
+//            updateStatistik();
+//            cekWaktuSelesai();
+//        });
+//    }
 
     public synchronized void updateStatistik() {
         txtStatistik.setText(String.format("Total baris : %d\nPersegi Panjang : %d\nPrisma : %d\nLimas : %d",
