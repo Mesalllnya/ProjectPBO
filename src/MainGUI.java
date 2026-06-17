@@ -182,7 +182,7 @@ public class MainGUI extends JFrame {
             PersegiPanjang prisma = new PrismaPersegiPanjang(this, jumlahData, "Thread Prisma (3D)", progPrisma, dataAlas);
             PersegiPanjang limas = new LimasPersegiPanjang(this, jumlahData, "Thread Limas (3D)", progLimas, dataAlas);
 
-//            double k = prisma.menghitungLuas();
+            double k = prisma.menghitungLuas();
             
             // Bisa langsung dimasukkan karena PersegiPanjang sudah 'implements Runnable'
             Thread threadPersegi = new Thread(persegi);
