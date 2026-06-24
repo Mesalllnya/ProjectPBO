@@ -29,7 +29,9 @@ public class PrismaPersegiPanjang extends PersegiPanjang implements Geometri3D, 
             super.lebar = dataAlas[i][1];
             super.luas = dataAlas[i][2]; 
             this.tinggi = dataAlas[i][3];
-
+            
+//            double a=0,b=0,c=0;
+            
             // Langsung panggil methodnya.
             double luasHitung = this.menghitungLuasPermukaan();
             double volumeHitung = this.menghitungVolume();

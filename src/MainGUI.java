@@ -20,7 +20,7 @@ public class MainGUI extends JFrame {
     
     // Array sebagai "Keranjang" (Shared Memory) antar thread
     // Menggunakan volatile agar update dari Persegi langsung terbaca oleh Prisma/Limas
-//    public volatile double[][] sharedBaseData;
+    // public volatile double[][] sharedBaseData;
 
     public MainGUI() {
         setTitle("Perhitungan Geometri (Multithreading)");
@@ -157,14 +157,25 @@ public class MainGUI extends JFrame {
             boolean isLManual = !textL.isEmpty();
             boolean isTManual = !textT.isEmpty();
             
+//            double pInput;
+//            if(isPManual){
+//                pInput = Double.parseDouble(textP);
+//            }else{
+//                pInput = 0;
+//            }
+            
+            // operator ternary     
             double pInput = isPManual ? Double.parseDouble(textP) : 0;
-            double lInput = isLManual ? Double.parseDouble(textL) : 0;
-            // Validasi Input
             if (isPManual && pInput <= 0) throw new GeometriInvalidException("P harus > 0");
-            if (isLManual && lInput <= 0) throw new GeometriInvalidException("L harus > 0");
+            
+            double lInput = isLManual ? Double.parseDouble(textL) : 0;
+            if (isLManual && lInput <= 0){ 
+                GeometriInvalidException invalid = new GeometriInvalidException("Lebar harus > 0");
+                    throw invalid;
+            }
         
             double tInput = isTManual ? Double.parseDouble(textT) : 0;
-            if (!textT.isEmpty() && (chkPrisma.isSelected() || chkLimas.isSelected())) {
+            if (isTManual && (chkPrisma.isSelected() || chkLimas.isSelected())) {
                 if (Double.parseDouble(textT) <= 0){ 
                     GeometriInvalidException invalid = new GeometriInvalidException("Tinggi harus > 0");
                     throw invalid;
@@ -177,8 +188,6 @@ public class MainGUI extends JFrame {
             for (int i = 0; i < jumlahData; i++) {
                 double p = isPManual ? pInput : (Math.random() * 40) + 5;
                 double l = isLManual ? lInput : (Math.random() * 40) + 5;
-
-                // Logika pembuatan T dilakukan di sini, SATU KALI SAJA di MainGUI
                 double t = isTManual ? tInput : (Math.random() * 40) + 5; 
 
                 dataAlas[i][0] = p; // Slot Panjang
