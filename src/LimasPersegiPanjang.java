@@ -2,7 +2,7 @@ import javax.swing.JProgressBar;
 import javax.swing.SwingUtilities;
 import java.util.Vector;
 
-public class LimasPersegiPanjang extends PersegiPanjang implements Geometri3D {
+public class LimasPersegiPanjang extends PersegiPanjang implements Geometri3D, Runnable {
     public double tinggi;
     public double luasPermukaanLimas;
     public double volumeLimas;

@@ -2,7 +2,7 @@ import javax.swing.JProgressBar;
 import javax.swing.SwingUtilities;
 import java.util.Vector;
 
-public class PrismaPersegiPanjang extends PersegiPanjang implements Geometri3D {
+public class PrismaPersegiPanjang extends PersegiPanjang implements Geometri3D, Runnable {
     public double tinggi, luasPermukaanPrisma, volumePrisma;
 
     public PrismaPersegiPanjang() {
@@ -30,7 +30,7 @@ public class PrismaPersegiPanjang extends PersegiPanjang implements Geometri3D {
             super.luas = dataAlas[i][2]; 
             this.tinggi = dataAlas[i][3];
 
-            // Langsung panggil methodnya. Komputer akan menggunakan atribut yang baru saja diupdate
+            // Langsung panggil methodnya.
             double luasHitung = this.menghitungLuasPermukaan();
             double volumeHitung = this.menghitungVolume();
             double kelilingHitung = 0; 

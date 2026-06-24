@@ -99,24 +99,4 @@ public class PersegiPanjang implements Geometri2D, Runnable {
         this.keliling = 2 * (p + l);
         return this.keliling;
     }
-
-//    @Override
-//    public double menghitungLuasPermukaan() {
-//        return menghitungLuas();
-//    }
-//
-//    @Override
-//    public double menghitungLuasPermukaan(double p, double l, double t) {
-//        return 0;
-//    }
-//    
-//    @Override
-//    public double menghitungVolume() {
-//        return 0;
-//    }
-//
-//    @Override
-//    public double menghitungVolume(double p, double l, double t) {
-//        return 0;
-//    }
 }
